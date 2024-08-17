@@ -1,7 +1,28 @@
 "use client";
+import { JsonRpcProvider, Wallet } from "ethers";
+import { useEffect, useState } from "react";
+import styles from "./page.module.css";
+
 require("dotenv").config();
 
 export default function Home() {
+  const [provider, setProvider] = useState(undefined);
+  const [wallet, setWallet] = useState(undefined);
+
+  useEffect(() => {
+    if (!wallet) {
+      const provider = new JsonRpcProvider(
+        process.env.NEXT_PUBLIC_LOCAL_RPC_URL
+      );
+      const wallet = Wallet.fromPhrase(
+        process.env.NEXT_PUBLIC_MNEMONIC,
+        provider
+      );
+      setProvider(provider);
+      setWallet(wallet);
+    }
+  }, []);
+
   return (
     <div className="container-fluid mt-5 d-flex justify-content-center">
       <div id="content" className="row">
@@ -14,6 +35,17 @@ export default function Home() {
               <span>Manage your crypto</span>
             </p>
           </div>
+          {wallet ? (
+            <>
+              <div className={styles.overview}>
+                <p className={styles.address}>{wallet.address}</p>
+                <p>BALANCE WILL BE HERE</p>
+              </div>
+              "wallet loaded"
+            </>
+          ) : (
+            "Loading..."
+          )}
         </div>
       </div>
     </div>
