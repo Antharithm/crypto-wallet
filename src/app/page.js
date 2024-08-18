@@ -1,13 +1,13 @@
 "use client";
+require("dotenv").config();
 import { JsonRpcProvider, Wallet } from "ethers";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 
-require("dotenv").config();
-
 export default function Home() {
   const [provider, setProvider] = useState(undefined);
   const [wallet, setWallet] = useState(undefined);
+  const [balance, setBalance] = useState(undefined);
 
   useEffect(() => {
     if (!wallet) {
@@ -22,6 +22,14 @@ export default function Home() {
       setWallet(wallet);
     }
   }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      const balance = await provider.getBalance(wallet.address);
+      setBalance(balance);
+    };
+    if (wallet) init();
+  }, [wallet]);
 
   return (
     <div className="container-fluid mt-5 d-flex justify-content-center">
@@ -39,7 +47,7 @@ export default function Home() {
             <>
               <div className={styles.overview}>
                 <p className={styles.address}>{wallet.address}</p>
-                <p>BALANCE WILL BE HERE</p>
+                <p>{balance ? balance.toString() : "Fetching balance..."}</p>
               </div>
               "wallet loaded"
             </>
