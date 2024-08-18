@@ -3,6 +3,7 @@ require("dotenv").config();
 import { JsonRpcProvider, Wallet } from "ethers";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
+import { formatWeiAmount } from "./utils";
 
 export default function Home() {
   const [provider, setProvider] = useState(undefined);
@@ -47,7 +48,11 @@ export default function Home() {
             <>
               <div className={styles.overview}>
                 <p className={styles.address}>{wallet.address}</p>
-                <p>{balance ? balance.toString() : "Fetching balance..."}</p>
+                <p className={styles.balance}>
+                  {balance
+                    ? `${formatWeiAmount(balance, 18)} ETH`
+                    : "Fetching balance..."}
+                </p>
               </div>
               "wallet loaded"
             </>

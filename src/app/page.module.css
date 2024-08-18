@@ -1,5 +1,5 @@
 .overview {
-  background-color: gray;
+  background-color: #3d89e5;
   border-radius: 0.5em;
   padding: 1em;
   text-align: center;
@@ -8,4 +8,9 @@
 
 .address {
   font-family: "Courier New", "Courier", "monospace";
+}
+
+.balance {
+  font-size: 2em;
+  font-weight: bold;
 }
