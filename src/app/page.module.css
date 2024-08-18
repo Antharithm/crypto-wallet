@@ -14,3 +14,9 @@
   font-size: 2em;
   font-weight: bold;
 }
+
+.transfer {
+  background-color: #8cca7a;
+  border-radius: 0.5em;
+  padding: 1em;
+}
