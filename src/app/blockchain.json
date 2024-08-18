@@ -1,0 +1,78 @@
+{
+  "assets": [
+    {
+      "name": "Testnet Ether",
+      "id": "0",
+      "coinckoId": "ethereum",
+      "ticker": "ETH",
+      "decimals": 18,
+      "logo": "/assets/eth.png",
+      "chainId": "31337"
+    },
+    {
+      "name": "Tether",
+      "id": "1",
+      "coinckoId": "tether",
+      "ticker": "USDT",
+      "decimals": 6,
+      "logo": "/assets/usdt.png",
+      "chainId": "31337",
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180a3"
+    },
+    {
+      "name": "Dai Stablecoin",
+      "id": "2",
+      "coinckoId": "dai",
+      "ticker": "DAI",
+      "decimals": 18,
+      "logo": "/assets/dai.png",
+      "chainId": "31337",
+      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+    },
+    {
+      "name": "Ether",
+      "id": "3",
+      "coinckoId": "ethereum",
+      "ticker": "ETH",
+      "decimals": 18,
+      "logo": "/assets/eth.png",
+      "chainId": "1"
+    },
+    {
+      "name": "Tether",
+      "id": "4",
+      "coinckoId": "usdt",
+      "ticker": "USDT",
+      "decimals": 6,
+      "logo": "/assets/usdt.png",
+      "chainId": "1",
+      "address": "0xA8452Ec99ce0C64f20701dB7dD3abDb607c00496"
+    }
+  ],
+  "chains": [
+    {
+      "name": "Ethereum (local testnet)",
+      "chainId": "31337",
+      "nativeAssetId": "0",
+      "blockchainExplorer": ""
+    },
+    {
+      "name": "Ethereum",
+      "chainId": "2",
+      "nativeAssetId": "2",
+      "blockchainExplorer": "https://etherscan.io/tx"
+    }
+  ],
+  "abis": {
+    "erc20": [
+      "function balanceOf(address account) external view returns (uint256)",
+      "function transfer(address to, uint256 value) external returns (bool)",
+      "function totalSupply() external view returns (uint256)",
+      "function allowance(address owner, address spender) external view returns (uint256)",
+      "function approve(address spender, uint256 value) external returns (bool)",
+      "function transferFrom(address from, address to, uint256 value) external returns (bool)",
+      "event Transfer(address indexed from, address indexed to, uint256 value)",
+      "event Approval(address indexed owner, address indexed spender, uint256 value)"
+    ]
+  }
+}

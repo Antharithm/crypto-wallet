@@ -4,11 +4,19 @@ import { JsonRpcProvider, Wallet } from "ethers";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { formatWeiAmount } from "./utils";
+import blockchain from "./blockchain.json";
+import Logo from "./component/Logo.js";
+
+const initialChain = blockchain.chains[0];
+const initialNativeAsset = blockchain.assets.find(
+  (asset) => asset.id === initialChain.nativeAssetId
+);
 
 export default function Home() {
   const [provider, setProvider] = useState(undefined);
   const [wallet, setWallet] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
+  const [nativeAsset, setNativeAsset] = useState(initialNativeAsset);
 
   useEffect(() => {
     if (!wallet) {
@@ -47,6 +55,10 @@ export default function Home() {
           {wallet ? (
             <>
               <div className={styles.overview}>
+                <p>
+                  <Logo asset={nativeAsset} />
+                  {nativeAsset.name}
+                </p>
                 <p className={styles.address}>{wallet.address}</p>
                 <p className={styles.balance}>
                   {balance
