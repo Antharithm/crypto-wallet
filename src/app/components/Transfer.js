@@ -17,61 +17,44 @@ export default function Transfer({
 
   useEffect(() => {
     const init = async () => {
-      try {
-        if (!transfer || !nativeAsset) {
-          console.error("Transfer or nativeAsset is undefined");
-          return;
-        }
+      // 1. Estimate gas cost
+      const txRequest = {
+        from: wallet.address,
+        to: transfer.to,
+        value: parseUnits(transfer.amount, transfer.asset.decimals),
+      };
+      const gasCost = await wallet.estimateGas(txRequest);
 
-        // Ensure decimals is defined
-        const decimals = transfer.address?.decimals || 18;
+      // 2. Gas price parameter
+      const feeData = await provider.getFeeData();
 
-        // 1. Estimate gas cost
-        const txRequest = {
-          from: wallet.address,
-          to: transfer.to,
-          value: parseUnits(transfer.amount, decimals),
-        };
-        const gasCost = await wallet.estimateGas(txRequest);
+      // 3. Compute txCostEth
+      const txCostEth = BigInt(gasCost) * BigInt(feeData.maxFeePerGas);
 
-        // 2. Gas price parameter
-        const feeData = await provider.getFeeData();
-
-        // 3. Compute txCostEth
-        const txCostEth = BigInt(gasCost) * BigInt(feeData.maxFeePerGas);
-
-        // 4. Compute txCostUSD
-        const ethPriceRaw = await fetch(
-          `https://api.coingecko.com/api/v3/simple/price?ids=${nativeAsset.coingeckoId}&vs_currencies=usd&x_cg_demo_api_key=${process.env.NEXT_PUBLIC_COINGECKO_API_KEY}`
-        );
-        const ethPrice = await ethPriceRaw.json();
-        const scaleFactor = 100;
-        const adjustedEthPrice = parseInt(
-          (ethPrice[nativeAsset.coingeckoId]?.usd || 0).toFixed(2) * scaleFactor
-        );
-        const txCostUSD =
-          (txCostEth * BigInt(adjustedEthPrice)) / BigInt(scaleFactor);
-
-        setTxCostEth(txCostEth);
-        setTxCostUSD(txCostUSD);
-      } catch (error) {
-        console.error("Error in init:", error);
-      }
+      // 4. Compute txCostUSD
+      const ethPriceRaw = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${nativeAsset.coingeckoId}&vs_currencies=usd&x_cg_demo_api_key=${process.env.NEXT_PUBLIC_COINGECKO_API_KEY}`
+      );
+      const ethPrice = await ethPriceRaw.json();
+      const scaleFactor = 100;
+      const adjustedEthPrice = parseInt(
+        ethPrice[nativeAsset.coingeckoId].usd.toFixed(2) * scaleFactor
+      );
+      const txCostUSD =
+        (txCostEth * BigInt(adjustedEthPrice)) / BigInt(scaleFactor);
+      setTxCostEth(txCostEth);
+      setTxCostUSD(txCostUSD);
     };
 
     init();
-  }, [transfer, nativeAsset, wallet, provider]);
+  }, []);
 
   const getTransactionFeeString = () => {
     return `${formatWeiAmount(
-      txCostUSD || BigInt(0),
-      nativeAsset?.decimals || 18
-    )} USD (${formatWeiAmount(
-      txCostEth || BigInt(0),
-      nativeAsset?.decimals || 18
-    )})`;
+      txCostUSD,
+      nativeAsset.decimals
+    )} USD (${formatWeiAmount(txCostEth, nativeAsset.decimals)})`;
   };
-
   return (
     <div id={styles.overlay}>
       <div id={styles.transfer}>

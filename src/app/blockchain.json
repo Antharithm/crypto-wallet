@@ -3,7 +3,7 @@
     {
       "name": "Testnet Ether",
       "id": "0",
-      "coinckoId": "ethereum",
+      "coingeckoId": "ethereum",
       "ticker": "ETH",
       "decimals": 18,
       "logo": "/assets/eth.png",
@@ -12,7 +12,7 @@
     {
       "name": "Tether",
       "id": "1",
-      "coinckoId": "tether",
+      "coingeckoId": "tether",
       "ticker": "USDT",
       "decimals": 6,
       "logo": "/assets/usdt.png",
@@ -22,7 +22,7 @@
     {
       "name": "Dai Stablecoin",
       "id": "2",
-      "coinckoId": "dai",
+      "coingeckoId": "dai",
       "ticker": "DAI",
       "decimals": 18,
       "logo": "/assets/dai.png",
@@ -32,7 +32,7 @@
     {
       "name": "Ether",
       "id": "3",
-      "coinckoId": "ethereum",
+      "coingeckoId": "ethereum",
       "ticker": "ETH",
       "decimals": 18,
       "logo": "/assets/eth.png",
@@ -41,7 +41,7 @@
     {
       "name": "Tether",
       "id": "4",
-      "coinckoId": "usdt",
+      "coingeckoId": "usdt",
       "ticker": "USDT",
       "decimals": 6,
       "logo": "/assets/usdt.png",
