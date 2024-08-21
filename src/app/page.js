@@ -1,6 +1,6 @@
 "use client";
 require("dotenv").config();
-import { JsonRpcProvider, Wallet } from "ethers";
+import { JsonRpcProvider, Wallet, Contract } from "ethers";
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { formatWeiAmount } from "./utils";
@@ -12,6 +12,11 @@ const initialChain = blockchain.chains[0];
 const initialNativeAsset = blockchain.assets.find(
   (asset) => asset.id === initialChain.nativeAssetId
 );
+const initialTokenAssets = blockchain.assets.filter(
+  (asset) =>
+    asset.chainId === initialNativeAsset.chainId &&
+    asset.id !== initialNativeAsset.id
+);
 const initialTransfer = {
   to: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
   amount: "1",
@@ -22,8 +27,8 @@ export default function Home() {
   const [provider, setProvider] = useState(undefined);
   const [wallet, setWallet] = useState(undefined);
   const [chain, setChain] = useState(initialChain);
-  const [balance, setBalance] = useState(undefined);
   const [nativeAsset, setNativeAsset] = useState(initialNativeAsset);
+  const [tokenAssets, setTokenAssets] = useState(initialTokenAssets);
   const [transfer, setTransfer] = useState(initialTransfer);
   const [showTransferModal, setShowTransferModal] = useState(false);
 
@@ -43,8 +48,26 @@ export default function Home() {
 
   useEffect(() => {
     const init = async () => {
-      const balance = await provider.getBalance(wallet.address);
-      setBalance(balance);
+      const calls = tokenAssets.map((token) => {
+        const tokenContract = new Contract(
+          token.address,
+          blockchain.abis.erc20,
+          wallet
+        );
+        return tokenContract.balanceOf(wallet.address);
+      });
+      calls.push(provider.getBalance(wallet.address));
+      const results = await Promise.all(calls);
+      const nativeBalance = results.pop();
+      const newTokenAssets = tokenAssets.map((token, i) => ({
+        ...token,
+        balance: results[i],
+      }));
+      setNativeAsset((nativeAsset) => ({
+        ...nativeAsset,
+        ...{ balance: nativeBalance },
+      }));
+      setTokenAssets(newTokenAssets);
     };
     if (wallet) init();
   }, [wallet]);
@@ -100,11 +123,25 @@ export default function Home() {
                 </p>
                 <p className={styles.address}>{wallet.address}</p>
                 <p className={styles.balance}>
-                  {balance
-                    ? `${formatWeiAmount(balance, 18)} ETH`
-                    : "Fetching balance..."}
+                  {nativeAsset.balance &&
+                    formatWeiAmount(nativeAsset.balance, 18)}{" "}
+                  ETH
                 </p>
               </div>
+
+              <div className={styles.tokens}>
+                {tokenAssets.map((token) => (
+                  <div key={token.id} className={styles.token}>
+                    <Logo asset={token} />
+                    {`${token.name}: ${
+                      token.balance &&
+                      formatWeiAmount(token.balance, token.decimals)
+                    } ${token.ticker}`}
+                    :
+                  </div>
+                ))}
+              </div>
+
               <div className={styles.transfer}>
                 <div className="form-group mb-3">
                   <label>Transfer asset</label>

@@ -1,0 +1,7 @@
+soldeer install @openzeppelin-contracts~5.0.2
+forge soldeer install @openzeppelin-contracts~5.0.2
+make deploy
+
+once the ERC20 mock tokens are deployed locally, copy those addresses and paste them into the blockchain.json file
+
+OR deploy mocktokens on a testnet, get those token addresses and swap the private key in the Makefile with metamask private key
