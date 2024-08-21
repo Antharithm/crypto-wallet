@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { parseUnits } from "ethers";
+import { parseUnits, Contract } from "ethers";
 import styles from "./transfer.module.css";
 import { formatWeiAmount } from "../utils.js";
+import blockchain from "../blockchain.json";
 
 export default function Transfer({
   provider,
@@ -21,24 +22,39 @@ export default function Transfer({
 
   useEffect(() => {
     const init = async () => {
-      // 1. Estimate gas cost
-      const txRequest = {
-        from: wallet.address,
-        to: transfer.to,
-        value: parseUnits(transfer.amount, transfer.asset.decimals),
-      };
-      const gasCost = await wallet.estimateGas(txRequest);
-
-      // 2. Gas price parameter
-      const feeData = await provider.getFeeData();
-
-      // 3. Compute txCostEth
+      let estimateGas;
+      // if no address it is a native token (addresses only assigned to ERC20s in json)
+      if (!transfer.asset.address) {
+        const txRequest = {
+          from: wallet.address,
+          to: transfer.to,
+          value: parseUnits(transfer.amount, transfer.asset.decimals),
+        };
+        estimateGas = wallet.estimateGas(txRequest);
+        // Otherwise it's an ERC20 token
+      } else {
+        const token = new Contract(
+          transfer.asset.address,
+          blockchain.abis.erc20,
+          wallet
+        );
+        // Estimate gas cost
+        estimateGas = token.transfer.estimateGas(
+          transfer.to,
+          parseUnits(transfer.amount, transfer.asset.decimals)
+        );
+      }
+      // Gas price parameter
+      const [gasCost, feeData, ethPriceRaw] = await Promise.all([
+        estimateGas,
+        // Compute txCostUSD
+        provider.getFeeData(),
+        fetch(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${nativeAsset.coingeckoId}&vs_currencies=usd&x_cg_demo_api_key=${process.env.NEXT_PUBLIC_COINGECKO_API_KEY}`
+        ),
+      ]);
+      // Compute txCostEth
       const txCostEth = BigInt(gasCost) * BigInt(feeData.maxFeePerGas);
-
-      // 4. Compute txCostUSD
-      const ethPriceRaw = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${nativeAsset.coingeckoId}&vs_currencies=usd&x_cg_demo_api_key=${process.env.NEXT_PUBLIC_COINGECKO_API_KEY}`
-      );
       const ethPrice = await ethPriceRaw.json();
       const scaleFactor = 100;
       const adjustedEthPrice = parseInt(
@@ -69,12 +85,28 @@ export default function Transfer({
   const send = async () => {
     setSending(true);
     try {
-      const txRequest = {
-        from: wallet.address,
-        to: transfer.to,
-        value: parseUnits(transfer.amount, transfer.asset.decimals),
-      };
-      const txResponse = await wallet.sendTransaction(txRequest);
+      let tx;
+      // Native asset
+      if (!transfer.asset.address) {
+        const txRequest = {
+          from: wallet.address,
+          to: transfer.to,
+          value: parseUnits(transfer.amount, transfer.asset.decimals),
+        };
+        tx = wallet.sendTransaction(txRequest);
+        // Otherwise it's an ERC20 token
+      } else {
+        const token = new Contract(
+          transfer.asset.address,
+          blockchain.abis.erc20,
+          wallet
+        );
+        tx = token.transfer(
+          transfer.to,
+          parseUnits(transfer.amount, transfer.asset.decimals)
+        );
+      }
+      const txResponse = await tx;
       const txReceipt = await txResponse.wait(); // wait for tx to be mined
       console.log(txReceipt);
       if (parseInt(txReceipt.status !== 1))
@@ -129,6 +161,16 @@ export default function Transfer({
             className="form-control mb-3"
             name="amount"
             value={transfer.amount}
+            disabled={true}
+          />
+        </div>
+        <div className="form-group mb3">
+          <label>Asset</label>
+          <input
+            type="text"
+            className="form-control mb-3"
+            name="asset"
+            value={transfer.asset.ticker}
             disabled={true}
           />
         </div>

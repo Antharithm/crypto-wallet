@@ -1,7 +1,20 @@
-soldeer install @openzeppelin-contracts~5.0.2
-forge soldeer install @openzeppelin-contracts~5.0.2
+FULL STARTUP
+anvil
+npm run dev
 make deploy
-
-once the ERC20 mock tokens are deployed locally, copy those addresses and paste them into the blockchain.json file
+Once the ERC20 mock tokens are deployed, copy those addresses and paste them into the blockchain.json file
+To add more ERC20 tokens, add them to the Token.s.sol and blockchain.json files
 
 OR deploy mocktokens on a testnet, get those token addresses and swap the private key in the Makefile with metamask private key
+
+CHECK COMMANDS
+cast balance --erc20 0x0_ADDRESS_OF_THE_ERC20_TOKEN 0x0_ADDRESS_OF_TO_ADDRESS (after sending a tx)
+
+OTHER COMMANDS
+soldeer install @openzeppelin-contracts~5.0.2
+forge soldeer install @openzeppelin-contracts~5.0.2
+
+FUTURE UPGRADES
+- Dropdown to switch networks (testnet, mainnet, etc) update the configuration file to implement a Dropdown
+- Add a built in way to trade on uniswap
+- Package it as a mobile app or chrome extention (avoid private key locally)

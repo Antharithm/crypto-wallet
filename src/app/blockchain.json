@@ -49,12 +49,22 @@
       "address": "0xA8452Ec99ce0C64f20701dB7dD3abDb607c00496"
     },
     {
-      "name": "Reserve Rights",
+      "name": "USDC",
       "id": "5",
+      "coingeckoId": "usdc",
+      "ticker": "USDC",
+      "decimals": 6,
+      "logo": "/assets/rsr.png",
+      "chainId": "1",
+      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    },
+    {
+      "name": "Reserve Rights",
+      "id": "6",
       "coingeckoId": "rsr",
       "ticker": "RSR",
       "decimals": 18,
-      "logo": "/assets/usdt.png",
+      "logo": "/assets/rsr.png",
       "chainId": "1",
       "address": "0x320623b8e4ff03373931769a31fc52a4e78b5d70"
     }

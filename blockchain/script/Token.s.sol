@@ -14,6 +14,7 @@ contract TokenScript is Script {
         vm.startBroadcast();
         usdt = new Token("Tether", "USDT", 1000 * 10 ** 6, 6);
         dai = new Token("Dai Stablecoin", "DAI", 1000 * 10 ** 18, 18);
+        // ADD MORE MOCK TOKENS HERE TO DEPLOY AND TO SHOW UP IN THE WALLET
         vm.stopBroadcast();
     }
 }
