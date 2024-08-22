@@ -1,7 +1,7 @@
 FULL STARTUP
 anvil
 npm run dev
-make deploy
+make deploy (cd into the blockchain folder)
 Once the ERC20 mock tokens are deployed, copy those addresses and paste them into the blockchain.json file
 To add more ERC20 tokens, add them to the Token.s.sol and blockchain.json files
 
